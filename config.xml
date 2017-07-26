@@ -1,0 +1,14 @@
+<widget id="com.maths.quiz" version="1.0.0">
+	<name>Maths Quiz</name>
+	<description>
+		A quiz game
+	</description>
+	<author>
+        Beta Decay
+    </author>
+	<content src="index.html"/>
+	<access origin="*"/>
+	<plugin version="1" name="cordova-plugin-whitelist"/>
+	<allow-navigation href="http://*/*"/>
+	<allow-intent href="http://*/*"/>
+</widget>

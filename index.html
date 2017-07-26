@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        <style>
+            body {
+                background: gainsboro;
+                font-family: sans-serif;
+                text-align: center;
+            }
+            
+            table {
+                border-collapse: collapse;
+                width: 60%;
+            }
+            
+            tr {
+                border: 1px solid black;
+                background: lightblue;
+            }
+            
+            tr:hover {
+                background: darkblue;
+                color: white;
+            }
+            
+            td {
+                padding: 10px;
+            }
+        </style>
+		<script>
+            var score = Number(localStorage.getItem("score"));
+            
+            if (score === undefined) {
+                score = 0;
+                localStorage.setItem("score", 0);
+            }
+            
+            function resetScore() {
+                score = 0;
+                localStorage.setItem("score", 0);
+                
+                document.getElementById("score").innerHTML = score;
+            }
+            
+            function shuffle(array) {
+              var currentIndex = array.length, temporaryValue, randomIndex;
+
+              // While there remain elements to shuffle...
+              while (0 !== currentIndex) {
+
+                // Pick a remaining element...
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
+
+                // And swap it with the current element.
+                temporaryValue = array[currentIndex];
+                array[currentIndex] = array[randomIndex];
+                array[randomIndex] = temporaryValue;
+              }
+
+              return array;
+            }
+
+            function newQuestion(){
+                var a = 0;
+                var b = 0;
+                
+                while (a == b) {
+                    a = (Math.floor(Math.random()*100)+1)*2;
+                    b = (Math.floor(Math.random()*100)+1)*2;
+                }
+                
+                var ops = ["+","-","*","/"];
+                
+                var op = ops[Math.floor(Math.random()*4)];
+                
+                document.getElementById("question-here").innerHTML = "What is "+a+" "+op+" "+b+"?";
+                
+                var correct_answer = eval("a"+op+"b");
+                var other_answers = [
+                    eval("(a*2)"+op+"b"),
+                    eval("Math.floor(a"+op+"Math.pow(b,1.3)+0.5)"),
+                    eval("b+1"+op+"a")
+                ]
+
+                var html = ['<tr><td class="correct_answer" onclick="correctAnswer()">'+correct_answer+'</td></tr>'];
+
+                for (var i = 0; i < other_answers.length; i++) {
+                    html.push('<tr><td class="incorrect_answer" onclick="incorrectAnswer(\''+other_answers[i]+'\')">'+other_answers[i]+'</td></tr>');
+                }
+                
+                html = shuffle(html);
+                
+                document.getElementById("answers-here").innerHTML = html.join('');
+            }
+            
+            function correctAnswer() {
+                //alert("Correct!");
+                
+                document.getElementsByClassName("correct_answer")[0].style.backgroundColor = "green";
+                document.getElementsByClassName("correct_answer")[0].style.color = "white";
+                
+                score += 5
+                
+                document.getElementById("score").innerHTML = score;
+                localStorage.setItem("score", score);
+                
+                setTimeout(function(){
+                    newQuestion();
+                }, 2000);
+            }
+            
+            function incorrectAnswer(answer) {
+                //alert("Incorrect");
+                
+                var answers = document.getElementsByClassName("incorrect_answer");
+                
+                document.getElementsByClassName("correct_answer")[0].style.backgroundColor = "green";
+                document.getElementsByClassName("correct_answer")[0].style.color = "white";
+                
+                for (var i = 0; i < 3; i++) {
+                    var a = answers[i];
+                    
+                    if (a.innerHTML == answer) {
+                        a.style.backgroundColor = "red";
+                        a.style.color = "white";
+                    }
+                }
+                
+                score -= 2
+                localStorage.setItem("score", score);
+                
+                document.getElementById("score").innerHTML = score;
+                
+                setTimeout(function(){
+                    newQuestion();
+                }, 2000);
+            }
+            
+            document.addEventListener("DOMContentLoaded", function(event){
+                document.getElementById("score").innerHTML = score;
+                newQuestion();
+            });
+		</script>
+	</head>
+	<body>
+		<h1>Quiz Game</h1>
+        <h3>Question: <span id="question-here">Which animal barks?</span></h3>
+		<table id="answers-here" align="center">
+        </table>
+        <br/>
+        Score: <span id="score"></span>
+        <br/><br/>
+        <a href="javascript:resetScore()">Reset Score</a>
+	</body>
+</html>
